@@ -1,0 +1,14 @@
+#!/bin/bash
+set -e
+
+source $(dirname $0)/version
+
+cd $(dirname $0)/../package
+
+TAG=${TAG:-${VERSION}}
+REPO=${REPO:-rancher}
+
+cp ../bin/rancher-cni-ipam .
+docker build -t ${REPO}/rancher-cni-ipam:${TAG} .
+
+echo Built ${REPO}/rancher-cni-ipam:${TAG}
