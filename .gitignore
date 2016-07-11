@@ -1,4 +1,6 @@
 /.dapper
 /bin
 *.swp
+*.diff
 /.trash-cache
+rancher-cni-ipam
