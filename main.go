@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net"
 	"os"
@@ -9,6 +10,10 @@ import (
 	"github.com/containernetworking/cni/pkg/skel"
 	"github.com/containernetworking/cni/pkg/types"
 	"github.com/rancher/rancher-cni-ipam/ipfinder/metadata"
+)
+
+const (
+	defaultPrefixSize = "/16"
 )
 
 func cmdAdd(args *skel.CmdArgs) error {
@@ -34,15 +39,25 @@ func cmdAdd(args *skel.CmdArgs) error {
 		return err
 	}
 	ipString := ipf.GetIP(args.ContainerID)
+	if ipString == "" {
+		return errors.New("No IP address found")
+	}
 
 	log.Debugf("rancher-cni-ipam: %s", fmt.Sprintf("ip: %#v", ipString))
 
-	ip, ipnet, err := net.ParseCIDR(ipString + "/16")
+	var prefixSize string
+
+	if ipamConf.SubnetPrefixSize != "" {
+		prefixSize = ipamConf.SubnetPrefixSize
+	} else {
+		prefixSize = defaultPrefixSize
+	}
+
+	ip, ipnet, err := net.ParseCIDR(ipString + prefixSize)
 	if err != nil {
 		return err
 	}
 
-	// TODO: if ip is NULL, return err
 	r := &types.Result{
 		IP4: &types.IPConfig{
 			IP: net.IPNet{IP: ip, Mask: ipnet.Mask},

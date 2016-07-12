@@ -7,8 +7,9 @@ import (
 
 // IPAMConfig is used to load the options specified in the configuration file
 type IPAMConfig struct {
-	Type      string `json:"type"`
-	LogToFile string `json:"logToFile"`
+	Type             string `json:"type"`
+	LogToFile        string `json:"logToFile"`
+	SubnetPrefixSize string `json:"subnetPrefixSize"`
 }
 
 // Net loads the options of the CNI network configuration file
