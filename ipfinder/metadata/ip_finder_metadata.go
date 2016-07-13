@@ -7,8 +7,9 @@ import (
 )
 
 const (
-	metadataURL    = "http://rancher-metadata/2015-12-19"
-	emptyIPAddress = ""
+	metadataURL         = "http://rancher-metadata/2015-12-19"
+	multiplierForTwoMin = 240
+	emptyIPAddress      = ""
 )
 
 // IPFinderFromMetadata is used to hold information related to
@@ -30,7 +31,7 @@ func NewIPFinderFromMetadata() (*IPFinderFromMetadata, error) {
 // if not found
 func (ipf *IPFinderFromMetadata) GetIP(cid string) string {
 
-	for i := 0; i < 600; i++ {
+	for i := 0; i < multiplierForTwoMin; i++ {
 		containers, err := ipf.m.GetContainers()
 		if err != nil {
 			log.Errorf("rancher-cni-ipam: Error getting metadata containers: %v", err)
@@ -38,7 +39,7 @@ func (ipf *IPFinderFromMetadata) GetIP(cid string) string {
 		}
 
 		for _, container := range containers {
-			if container.ExternalId == cid {
+			if container.ExternalId == cid && container.PrimaryIp != "" {
 				log.Infof("rancher-cni-ipam: got ip: %v", container.PrimaryIp)
 				return container.PrimaryIp
 			}
