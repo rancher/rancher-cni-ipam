@@ -3,13 +3,16 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+
+	"github.com/containernetworking/cni/pkg/types"
 )
 
 // IPAMConfig is used to load the options specified in the configuration file
 type IPAMConfig struct {
-	Type             string `json:"type"`
-	LogToFile        string `json:"logToFile"`
-	SubnetPrefixSize string `json:"subnetPrefixSize"`
+	Type             string        `json:"type"`
+	LogToFile        string        `json:"logToFile"`
+	SubnetPrefixSize string        `json:"subnetPrefixSize"`
+	Routes           []types.Route `json:"routes"`
 }
 
 // Net loads the options of the CNI network configuration file
