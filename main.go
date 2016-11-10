@@ -9,6 +9,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/containernetworking/cni/pkg/skel"
 	"github.com/containernetworking/cni/pkg/types"
+	"github.com/containernetworking/cni/pkg/version"
 	"github.com/rancher/rancher-cni-ipam/ipfinder/metadata"
 )
 
@@ -33,12 +34,13 @@ func cmdAdd(args *skel.CmdArgs) error {
 	log.Debugf("rancher-cni-ipam: cmdAdd: invoked")
 	log.Debugf("rancher-cni-ipam: %s", fmt.Sprintf("args: %#v", args))
 	log.Debugf("rancher-cni-ipam: %s", fmt.Sprintf("ipamConf: %#v", ipamConf))
+	log.Debugf("rancher-cni-ipam: rancher UUID: %s", ipamConf.RancherContainerUUID)
 
 	ipf, err := metadata.NewIPFinderFromMetadata()
 	if err != nil {
 		return err
 	}
-	ipString := ipf.GetIP(args.ContainerID)
+	ipString := ipf.GetIP(args.ContainerID, string(ipamConf.RancherContainerUUID))
 	if ipString == "" {
 		return errors.New("No IP address found")
 	}
@@ -77,5 +79,5 @@ func cmdDel(args *skel.CmdArgs) error {
 }
 
 func main() {
-	skel.PluginMain(cmdAdd, cmdDel)
+	skel.PluginMain(cmdAdd, cmdDel, version.PluginSupports("0.1.0"))
 }

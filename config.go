@@ -9,10 +9,12 @@ import (
 
 // IPAMConfig is used to load the options specified in the configuration file
 type IPAMConfig struct {
-	Type             string        `json:"type"`
-	LogToFile        string        `json:"logToFile"`
-	SubnetPrefixSize string        `json:"subnetPrefixSize"`
-	Routes           []types.Route `json:"routes"`
+	types.CommonArgs
+	Type                 string        `json:"type"`
+	LogToFile            string        `json:"logToFile"`
+	SubnetPrefixSize     string        `json:"subnetPrefixSize"`
+	Routes               []types.Route `json:"routes"`
+	RancherContainerUUID types.UnmarshallableString
 }
 
 // Net loads the options of the CNI network configuration file
@@ -30,6 +32,10 @@ func LoadIPAMConfig(bytes []byte, args string) (*IPAMConfig, error) {
 
 	if n.IPAM == nil {
 		return nil, fmt.Errorf("IPAM config missing 'ipam' key")
+	}
+
+	if err := types.LoadArgs(args, n.IPAM); err != nil {
+		return nil, fmt.Errorf("failed to parse args %s: %v", args, err)
 	}
 
 	return n.IPAM, nil

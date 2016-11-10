@@ -29,8 +29,7 @@ func NewIPFinderFromMetadata() (*IPFinderFromMetadata, error) {
 
 // GetIP returns the IP address for the given container id, return an empty string
 // if not found
-func (ipf *IPFinderFromMetadata) GetIP(cid string) string {
-
+func (ipf *IPFinderFromMetadata) GetIP(cid, rancherid string) string {
 	for i := 0; i < multiplierForTwoMin; i++ {
 		containers, err := ipf.m.GetContainers()
 		if err != nil {
@@ -43,8 +42,12 @@ func (ipf *IPFinderFromMetadata) GetIP(cid string) string {
 				log.Infof("rancher-cni-ipam: got ip: %v", container.PrimaryIp)
 				return container.PrimaryIp
 			}
+			if rancherid != "" && container.UUID == rancherid && container.PrimaryIp != "" {
+				log.Infof("rancher-cni-ipam: got ip from rancherid: %v", container.PrimaryIp)
+				return container.PrimaryIp
+			}
 		}
-		log.Infof("Waiting to find IP for container: %s", cid)
+		log.Infof("Waiting to find IP for container: %s, %s", cid, rancherid)
 		time.Sleep(500 * time.Millisecond)
 	}
 	log.Infof("ip not found for cid: %v", cid)
