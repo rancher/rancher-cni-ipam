@@ -6,7 +6,7 @@ import (
 	"net"
 	"os"
 
-	log "github.com/Sirupsen/logrus"
+	"github.com/Sirupsen/logrus"
 	"github.com/containernetworking/cni/pkg/skel"
 	"github.com/containernetworking/cni/pkg/types"
 	"github.com/containernetworking/cni/pkg/version"
@@ -23,18 +23,22 @@ func cmdAdd(args *skel.CmdArgs) error {
 		return err
 	}
 
+	if ipamConf.IsDebugLevel == "true" {
+		logrus.SetLevel(logrus.DebugLevel)
+	}
+
 	if ipamConf.LogToFile != "" {
 		f, err := os.OpenFile(ipamConf.LogToFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 		if err == nil && f != nil {
-			log.SetOutput(f)
+			logrus.SetOutput(f)
 			defer f.Close()
 		}
 	}
 
-	log.Debugf("rancher-cni-ipam: cmdAdd: invoked")
-	log.Debugf("rancher-cni-ipam: %s", fmt.Sprintf("args: %#v", args))
-	log.Debugf("rancher-cni-ipam: %s", fmt.Sprintf("ipamConf: %#v", ipamConf))
-	log.Debugf("rancher-cni-ipam: rancher UUID: %s", ipamConf.RancherContainerUUID)
+	logrus.Debugf("rancher-cni-ipam: cmdAdd: invoked")
+	logrus.Debugf("rancher-cni-ipam: %s", fmt.Sprintf("args: %#v", args))
+	logrus.Debugf("rancher-cni-ipam: %s", fmt.Sprintf("ipamConf: %#v", ipamConf))
+	logrus.Debugf("rancher-cni-ipam: rancher UUID: %s", ipamConf.RancherContainerUUID)
 
 	ipf, err := metadata.NewIPFinderFromMetadata()
 	if err != nil {
@@ -45,7 +49,7 @@ func cmdAdd(args *skel.CmdArgs) error {
 		return errors.New("No IP address found")
 	}
 
-	log.Debugf("rancher-cni-ipam: %s", fmt.Sprintf("ip: %#v", ipString))
+	logrus.Debugf("rancher-cni-ipam: %s", fmt.Sprintf("ip: %#v", ipString))
 
 	var prefixSize string
 
@@ -70,7 +74,7 @@ func cmdAdd(args *skel.CmdArgs) error {
 		ipamConf.Routes,
 	)
 
-	log.Infof("rancher-cni-ipam: %s", fmt.Sprintf("r: %#v", r))
+	logrus.Infof("rancher-cni-ipam: %s", fmt.Sprintf("r: %#v", r))
 	return r.Print()
 }
 

@@ -12,6 +12,7 @@ type IPAMConfig struct {
 	types.CommonArgs
 	Type                 string        `json:"type"`
 	LogToFile            string        `json:"logToFile"`
+	IsDebugLevel         string        `json:"isDebugLevel"`
 	SubnetPrefixSize     string        `json:"subnetPrefixSize"`
 	Routes               []types.Route `json:"routes"`
 	RancherContainerUUID types.UnmarshallableString
