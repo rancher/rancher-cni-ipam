@@ -66,7 +66,8 @@ func cmdAdd(args *skel.CmdArgs) error {
 
 	r := &types.Result{
 		IP4: &types.IPConfig{
-			IP: net.IPNet{IP: ip, Mask: ipnet.Mask},
+			IP:      net.IPNet{IP: ip, Mask: ipnet.Mask},
+			Gateway: net.ParseIP(ipamConf.Gateway),
 		},
 	}
 
