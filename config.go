@@ -15,6 +15,7 @@ type IPAMConfig struct {
 	IsDebugLevel         string        `json:"isDebugLevel"`
 	SubnetPrefixSize     string        `json:"subnetPrefixSize"`
 	Routes               []types.Route `json:"routes"`
+	Gateway              string        `json:"gateway"`
 	RancherContainerUUID types.UnmarshallableString
 }
 
