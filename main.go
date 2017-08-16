@@ -40,7 +40,8 @@ func cmdAdd(args *skel.CmdArgs) error {
 	logrus.Debugf("rancher-cni-ipam: %s", fmt.Sprintf("ipamConf: %#v", ipamConf))
 	logrus.Debugf("rancher-cni-ipam: rancher UUID: %s", ipamConf.RancherContainerUUID)
 
-	ipf, err := metadata.NewIPFinderFromMetadata()
+	metadataAddress := os.Getenv("RANCHER_METADATA_ADDRESS")
+	ipf, err := metadata.NewIPFinderFromMetadata(metadataAddress)
 	if err != nil {
 		return err
 	}
