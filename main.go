@@ -39,28 +39,32 @@ func cmdAdd(args *skel.CmdArgs) error {
 	logrus.Debugf("rancher-cni-ipam: %s", fmt.Sprintf("args: %#v", args))
 	logrus.Debugf("rancher-cni-ipam: %s", fmt.Sprintf("ipamConf: %#v", ipamConf))
 	logrus.Debugf("rancher-cni-ipam: rancher UUID: %s", ipamConf.RancherContainerUUID)
+	logrus.Debugf("rancher-cni-ipam: IPAddress from args: %s", ipamConf.IPAddress)
 
 	metadataAddress := os.Getenv("RANCHER_METADATA_ADDRESS")
 	ipf, err := metadata.NewIPFinderFromMetadata(metadataAddress)
 	if err != nil {
 		return err
 	}
-	ipString := ipf.GetIP(args.ContainerID, string(ipamConf.RancherContainerUUID))
-	if ipString == "" {
-		return errors.New("No IP address found")
+
+	ipStringWithPrefix := string(ipamConf.IPAddress)
+	if ipStringWithPrefix == "" {
+		ipString := ipf.GetIP(args.ContainerID, string(ipamConf.RancherContainerUUID))
+		if ipString == "" {
+			return errors.New("No IP address found")
+		}
+
+		prefixSize := ""
+		if ipamConf.SubnetPrefixSize != "" {
+			prefixSize = ipamConf.SubnetPrefixSize
+		} else {
+			prefixSize = defaultPrefixSize
+		}
+		ipStringWithPrefix = ipString + prefixSize
 	}
+	logrus.Debugf("rancher-cni-ipam: ip: %s", ipStringWithPrefix)
 
-	logrus.Debugf("rancher-cni-ipam: %s", fmt.Sprintf("ip: %#v", ipString))
-
-	var prefixSize string
-
-	if ipamConf.SubnetPrefixSize != "" {
-		prefixSize = ipamConf.SubnetPrefixSize
-	} else {
-		prefixSize = defaultPrefixSize
-	}
-
-	ip, ipnet, err := net.ParseCIDR(ipString + prefixSize)
+	ip, ipnet, err := net.ParseCIDR(ipStringWithPrefix)
 	if err != nil {
 		return err
 	}

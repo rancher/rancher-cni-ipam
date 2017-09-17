@@ -12,3 +12,5 @@ fi
 mkdir -p dist/artifacts
 cd bin/
 tar cvzf ../dist/artifacts/rancher-cni-ipam-${VERSION}.tar.gz .
+
+echo "Built rancher-cni-ipam-${VERSION}.tar.gz"

@@ -16,6 +16,7 @@ type IPAMConfig struct {
 	SubnetPrefixSize     string        `json:"subnetPrefixSize"`
 	Routes               []types.Route `json:"routes"`
 	RancherContainerUUID types.UnmarshallableString
+	IPAddress            types.UnmarshallableString
 }
 
 // Net loads the options of the CNI network configuration file
