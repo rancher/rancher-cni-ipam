@@ -10,7 +10,7 @@ import (
 
 const (
 	metadataURLTemplate = "http://%v/2015-12-19"
-	multiplierForTwoMin = 240
+	multiplier          = 60
 	emptyIPAddress      = ""
 
 	// DefaultMetadataAddress specifies the default value to use if nothing is specified
@@ -39,7 +39,7 @@ func NewIPFinderFromMetadata(metadataAddress string) (*IPFinderFromMetadata, err
 // GetIP returns the IP address for the given container id, return an empty string
 // if not found
 func (ipf *IPFinderFromMetadata) GetIP(cid, rancherid string) string {
-	for i := 0; i < multiplierForTwoMin; i++ {
+	for i := 0; i < multiplier; i++ {
 		containers, err := ipf.m.GetContainers()
 		if err != nil {
 			logrus.Errorf("rancher-cni-ipam: Error getting metadata containers: %v", err)
